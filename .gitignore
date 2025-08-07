@@ -1,0 +1,32 @@
+# Large files (>25MB)
+*.csv
+*.parquet
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+*.db
+*.sqlite
+*.zip
+*.tar.gz
+*.7z
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+venv/
+env/
+.env
+.venv
+*_env/
+
+# OS generated files
+.DS_Store
+Thumbs.db
