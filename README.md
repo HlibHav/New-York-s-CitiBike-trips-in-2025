@@ -53,6 +53,9 @@ This project combines CitiBike trip data with historical weather data to analyze
 
 ## 📁 Project Structure
 
+## 📂 Project Structure
+
+```text
 New York's CitiBike trips in 2022./
 ├── .gitignore                             # Git ignore rules for large files
 ├── README.md                              # Project documentation
@@ -61,13 +64,13 @@ New York's CitiBike trips in 2022./
 ├── citibike_weather_env/                  # Python virtual environment
 ├── logs/                                  # Analysis execution logs
 │   └── citibike_analysis_20250814_131055.log
-├── JC-202401-citibike-tripdata.csv       # Jan 2024 trip data
-├── JC-202402-citibike-tripdata.csv       # Feb 2024 trip data
+├── JC-202401-citibike-tripdata.csv        # Jan 2024 trip data
+├── JC-202402-citibike-tripdata.csv        # Feb 2024 trip data
 ├── ... (monthly files through Dec 2024)
-├── weather_data_2024_openmeteo.csv       # Basic weather data
-├── weather_data_2024_enhanced.csv        # Enhanced weather features
-└── citibike_weather_merged_2024.csv      # Merged trip and weather data
-...
+├── weather_data_2024_openmeteo.csv        # Basic weather data
+├── weather_data_2024_enhanced.csv         # Enhanced weather features
+└── citibike_weather_merged_2024.csv       # Merged trip and weather data
+```
 
 ## 🚀 Usage
 
@@ -76,7 +79,7 @@ New York's CitiBike trips in 2022./
 1. **Open the main notebook**:
    ```bash
    jupyter lab citibike_weather_analysis_2024.ipynb
-   ```
+   
 
 2. **Run all cells** to:
    - Load and process CitiBike trip data
