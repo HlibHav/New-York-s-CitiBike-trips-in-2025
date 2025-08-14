@@ -67,6 +67,7 @@ New York's CitiBike trips in 2022./
 ├── weather_data_2024_openmeteo.csv       # Basic weather data
 ├── weather_data_2024_enhanced.csv        # Enhanced weather features
 └── citibike_weather_merged_2024.csv      # Merged trip and weather data
+...
 
 ## 🚀 Usage
 
