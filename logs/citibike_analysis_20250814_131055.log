@@ -1,0 +1,8 @@
+2025-08-14 13:10:55,238 - citibike_analysis - INFO - <module>:54 - CitiBike Weather Analysis Pipeline Started
+2025-08-14 13:10:55,239 - citibike_analysis - INFO - <module>:55 - Configuration loaded: Config(CITIBIKE_FILE_PATTERN='JC-202*-citibike-tripdata.csv', WEATHER_OUTPUT_FILE='weather_data_2024_openmeteo.csv', MERGED_OUTPUT_FILE='citibike_weather_merged_2024.csv', DETRENDED_OUTPUT_FILE='citibike_weather_detrended_analysis.csv', WEATHER_API_URL='https://archive-api.open-meteo.com/v1/archive', LAGUARDIA_LAT=40.7769, LAGUARDIA_LON=-73.874, WEATHER_START_DATE='2024-01-01', WEATHER_END_DATE='2024-12-31', TIMEZONE='America/New_York', MIN_TRIP_DURATION_MINUTES=1.0, MAX_TRIP_DURATION_HOURS=8.0, MAX_MISSING_DATA_PERCENT=10.0, ROLLING_WINDOW_DAYS=7, CORRELATION_SIGNIFICANCE_LEVEL=0.05, WEATHER_VARIABLES=['temperature_2m_max', 'temperature_2m_min', 'temperature_2m_mean', 'precipitation_sum', 'wind_speed_10m_max', 'relative_humidity_2m_mean'])
+2025-08-14 13:10:55,672 - citibike_analysis - INFO - run_complete_analysis:58 - Starting complete CitiBike weather analysis pipeline
+2025-08-14 13:10:55,672 - citibike_analysis - INFO - run_complete_analysis:65 - Loading cached merged data from citibike_weather_merged_2024.csv
+2025-08-14 13:10:57,433 - citibike_analysis - INFO - run_complete_analysis:90 - Step 4: Computing detrended correlations
+2025-08-14 13:10:57,433 - citibike_analysis - INFO - compute_detrended_correlations:13 - Computing detrended correlations with 7-day rolling window
+2025-08-14 13:10:57,597 - citibike_analysis - ERROR - run_complete_analysis:102 - Analysis pipeline failed: 'trip_count'
+2025-08-14 13:10:57,598 - citibike_analysis - ERROR - <module>:23 - Pipeline execution failed: 'trip_count'
