@@ -1,0 +1,13 @@
+{
+  "version": "v1",
+  "config": {
+    "visState": {
+      "filters": [
+        {
+          "dataId": "trips",
+          "id": "trip_count_filter",
+          "name": "Trip Count",
+          "type": "range",
+          "value": [
+            11.0,
+            
