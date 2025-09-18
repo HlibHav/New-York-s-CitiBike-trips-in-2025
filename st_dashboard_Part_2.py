@@ -133,45 +133,154 @@ if page == "Intro page":
 elif page == 'Weather component and bike usage':
     st.header("🌤️ Weather Impact on Bike Usage")
     
-    # Create dual-axis chart
-    fig_2 = make_subplots(specs=[[{"secondary_y": True}]])
+    # Create cleaner separate visualizations
+    col1, col2 = st.columns(2)
     
-    # Add bike rides trace
-    fig_2.add_trace(
+    with col1:
+        # Temperature trend - clean single line
+        fig_temp = go.Figure()
+        fig_temp.add_trace(go.Scatter(
+            x=df['date'],
+            y=df['avgTemp'],
+            mode='lines+markers',
+            name='Temperature',
+            line=dict(color='#ff6b6b', width=3),
+            marker=dict(size=4),
+            fill='tonexty',
+            fillcolor='rgba(255, 107, 107, 0.1)'
+        ))
+        
+        fig_temp.update_layout(
+            title='🌡️ Temperature Trend Throughout 2024',
+            xaxis_title='Date',
+            yaxis_title='Temperature (°C)',
+            height=400,
+            showlegend=False
+        )
+        
+        st.plotly_chart(fig_temp, use_container_width=True)
+    
+    with col2:
+        # Bike rides trend - clean single line
+        fig_rides = go.Figure()
+        fig_rides.add_trace(go.Scatter(
+            x=df['date'],
+            y=df['bike_rides_daily'],
+            mode='lines+markers',
+            name='Daily Rides',
+            line=dict(color='#4ecdc4', width=3),
+            marker=dict(size=4),
+            fill='tonexty',
+            fillcolor='rgba(78, 205, 196, 0.1)'
+        ))
+        
+        fig_rides.update_layout(
+            title='🚴‍♂️ Daily Bike Rides Throughout 2024',
+            xaxis_title='Date',
+            yaxis_title='Daily Bike Rides',
+            height=400,
+            showlegend=False
+        )
+        
+        st.plotly_chart(fig_rides, use_container_width=True)
+    
+    # Clean correlation scatter plot
+    st.markdown("### 📊 Temperature vs Ridership Correlation")
+    
+    fig_scatter = px.scatter(
+        df,
+        x='avgTemp',
+        y='bike_rides_daily',
+        color='season',
+        size='precipitation_mm',
+        title='🌡️ Temperature vs Daily Bike Rides (Colored by Season)',
+        labels={
+            'avgTemp': 'Average Temperature (°C)',
+            'bike_rides_daily': 'Daily Bike Rides',
+            'precipitation_mm': 'Precipitation (mm)'
+        },
+        color_discrete_map={
+            'Winter': '#74b9ff',
+            'Spring': '#00b894', 
+            'Summer': '#fdcb6e',
+            'Fall': '#e17055'
+        },
+        height=500
+    )
+    
+    # Add trendline
+    fig_scatter.add_trace(
         go.Scatter(
-            x=df['date'], 
-            y=df['bike_rides_daily'], 
-            name='Daily Bike Rides',
-            line=dict(color='#1f77b4', width=2),
-            mode='lines'
+            x=df['avgTemp'].sort_values(),
+            y=np.poly1d(np.polyfit(df['avgTemp'], df['bike_rides_daily'], 1))(df['avgTemp'].sort_values()),
+            mode='lines',
+            name='Trend Line',
+            line=dict(color='red', width=2, dash='dash')
+        )
+    )
+    
+    st.plotly_chart(fig_scatter, use_container_width=True)
+    
+    # Add monthly aggregated view for cleaner analysis
+    st.markdown("### 📅 Monthly Weather vs Ridership (Cleaner View)")
+    
+    # Create monthly aggregates
+    df_monthly = df.groupby(df['date'].dt.to_period('M')).agg({
+        'bike_rides_daily': 'mean',
+        'avgTemp': 'mean',
+        'precipitation_mm': 'mean'
+    }).round(1)
+    
+    df_monthly.index = df_monthly.index.astype(str)
+    
+    # Create clean dual-axis chart with monthly data
+    fig_monthly = make_subplots(specs=[[{"secondary_y": True}]])
+    
+    # Add monthly bike rides (bar chart)
+    fig_monthly.add_trace(
+        go.Bar(
+            x=df_monthly.index,
+            y=df_monthly['bike_rides_daily'],
+            name='Avg Monthly Rides',
+            marker_color='rgba(78, 205, 196, 0.8)',
+            yaxis='y'
         ),
         secondary_y=False
     )
     
-    # Add temperature trace
-    fig_2.add_trace(
+    # Add monthly temperature (line chart)
+    fig_monthly.add_trace(
         go.Scatter(
-            x=df['date'], 
-            y=df['avgTemp'], 
-            name='Average Temperature (°C)',
-            line=dict(color='#ff7f0e', width=2),
-            mode='lines'
+            x=df_monthly.index,
+            y=df_monthly['avgTemp'],
+            mode='lines+markers',
+            name='Avg Monthly Temperature',
+            line=dict(color='#ff6b6b', width=4),
+            marker=dict(size=8, color='#ff6b6b'),
+            yaxis='y2'
         ),
         secondary_y=True
     )
     
-    # Update layout
-    fig_2.update_layout(
-        title='📈 Daily Bike Trips vs Temperature Correlation',
-        height=500,
-        hovermode='x unified'
+    # Update layout for clarity
+    fig_monthly.update_layout(
+        title='📊 Monthly Average: Bike Rides vs Temperature (Much Cleaner!)',
+        height=450,
+        hovermode='x unified',
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1
+        )
     )
     
     # Set y-axes titles
-    fig_2.update_yaxes(title_text="Daily Bike Rides", secondary_y=False)
-    fig_2.update_yaxes(title_text="Temperature (°C)", secondary_y=True)
+    fig_monthly.update_yaxes(title_text="Average Daily Bike Rides", secondary_y=False)
+    fig_monthly.update_yaxes(title_text="Average Temperature (°C)", secondary_y=True)
     
-    st.plotly_chart(fig_2, use_container_width=True)
+    st.plotly_chart(fig_monthly, use_container_width=True)
     
     # Insights
     st.markdown("---")
