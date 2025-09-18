@@ -31,5 +31,6 @@ env/
 .DS_Store
 Thumbs.db
 
-# Exception for the main data file
+# Exception for essential data files
 !citibike_weather_merged_2024.csv
+!citibike_weather_detrended_analysis.csv
