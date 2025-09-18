@@ -30,3 +30,6 @@ env/
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Exception for the main data file
+!citibike_weather_merged_2024.csv
