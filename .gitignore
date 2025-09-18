@@ -34,3 +34,5 @@ Thumbs.db
 # Exception for essential data files
 !citibike_weather_merged_2024.csv
 !citibike_weather_detrended_analysis.csv
+!reduced_data_to_plot_7.csv
+!top20.csv
