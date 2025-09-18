@@ -76,12 +76,12 @@ def get_global_layout(**kwargs):
         'xaxis': {
             'gridcolor': GLOBAL_CHART_CONFIG['grid_color'],
             'tickfont': {'size': GLOBAL_CHART_CONFIG['font_size_tick']},
-            'titlefont': {'size': GLOBAL_CHART_CONFIG['font_size_axis']}
+            'title': {'font': {'size': GLOBAL_CHART_CONFIG['font_size_axis']}}
         },
         'yaxis': {
             'gridcolor': GLOBAL_CHART_CONFIG['grid_color'],
             'tickfont': {'size': GLOBAL_CHART_CONFIG['font_size_tick']},
-            'titlefont': {'size': GLOBAL_CHART_CONFIG['font_size_axis']}
+            'title': {'font': {'size': GLOBAL_CHART_CONFIG['font_size_axis']}}
         }
     }
     base_layout.update(kwargs)
@@ -1125,8 +1125,7 @@ def create_advanced_correlation_analysis(df):
             hoverongaps=False,
             hovertemplate='<b>%{y}</b> vs <b>%{x}</b><br>Correlation: %{z:.3f}<extra></extra>',
             colorbar=dict(
-                title="Correlation Coefficient",
-                titlefont=dict(color='white', size=14),
+                title=dict(text="Correlation Coefficient", font=dict(color='white', size=14)),
                 tickfont=dict(color='white'),
                 thickness=15,
                 len=0.8
