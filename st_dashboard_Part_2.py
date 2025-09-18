@@ -6,7 +6,15 @@ import plotly.graph_objects as go
 import plotly.express as px
 import matplotlib.pyplot as plt
 from datetime import datetime as dt
-from numerize.numerize import numerize
+# Simple number formatting function to replace numerize
+def numerize(value):
+    """Simple number formatting function"""
+    if value >= 1_000_000:
+        return f"{value/1_000_000:.1f}M"
+    elif value >= 1_000:
+        return f"{value/1_000:.1f}K"
+    else:
+        return f"{value:.0f}"
 from PIL import Image
 import os
 
