@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CitiBike AI Chat</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .chat-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .chat-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .chat-header h2 {
+            margin: 0;
+            color: #ffffff;
+            font-size: 1.5rem;
+        }
+        
+        .chat-header p {
+            margin: 10px 0 0 0;
+            color: #cccccc;
+            opacity: 0.8;
+        }
+        
+        .input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        #messageInput {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #555;
+            border-radius: 10px;
+            background: #333;
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+        
+        #messageInput:focus {
+            border-color: #667eea;
+        }
+        
+        #sendButton {
+            padding: 15px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        #sendButton:hover {
+            background: #5a6fd8;
+        }
+        
+        #sendButton:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+        
+        .chat-area {
+            background: #1a1a1a;
+            border: 2px solid #444;
+            border-radius: 15px;
+            padding: 20px;
+            min-height: 400px;
+            max-height: 500px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 12px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        
+        .message.user {
+            background: #333;
+            margin-left: auto;
+            text-align: right;
+        }
+        
+        .message.agent {
+            background: #2a2a2a;
+            margin-right: auto;
+        }
+        
+        .message strong {
+            color: #667eea;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .visualization-card {
+            background: linear-gradient(135deg, 
+                rgba(102, 126, 234, 0.1) 0%,
+                rgba(102, 126, 234, 0.05) 100%);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+        }
+        
+        .viz-header {
+            margin-bottom: 0.5rem;
+        }
+        
+        .viz-header h4 {
+            margin: 0 0 0.25rem 0;
+            color: #ffffff;
+            font-size: 1rem;
+        }
+        
+        .viz-header p {
+            margin: 0;
+            color: #cccccc;
+            font-size: 0.8rem;
+        }
+        
+        .viz-preview {
+            margin: 0.5rem 0;
+            text-align: center;
+        }
+        
+        .viz-preview iframe {
+            border-radius: 8px;
+            background: white;
+            border: 1px solid #ddd;
+        }
+        
+        .viz-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+        
+        .viz-link {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 12px;
+            transition: background 0.3s;
+        }
+        
+        .viz-link:hover {
+            background: #5a6fd8;
+        }
+        
+        .viz-data-points {
+            color: #888;
+            font-size: 11px;
+        }
+        
+        .insights, .recommendations {
+            margin: 1rem 0;
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+        
+        .insights {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid #10b981;
+        }
+        
+        .recommendations {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 3px solid #f59e0b;
+        }
+        
+        .insights h5, .recommendations h5 {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.9rem;
+        }
+        
+        .insights ul, .recommendations ul {
+            margin: 0;
+            padding-left: 1.2rem;
+        }
+        
+        .insights li, .recommendations li {
+            margin: 0.25rem 0;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2>🤖 AI-Powered CitiBike Analyst</h2>
+            <p>Ask me anything about your CitiBike data!</p>
+        </div>
+        
+        <div class="input-container">
+            <input type="text" id="messageInput" placeholder="Ask about peak hours, stations, weather, or any analysis..." value="Create a heatmap of hourly usage patterns">
+            <button id="sendButton" onclick="sendMessage()">Send</button>
+        </div>
+        
+        <div id="chatArea" class="chat-area">
+            <div class="message agent">
+                <strong>🤖 AI Analyst:</strong> Hello! I'm your CitiBike AI analyst. I'm ready to help you analyze your data. Try asking me about:
+                <ul>
+                    <li>Create a heatmap of hourly usage patterns</li>
+                    <li>Show me the top 10 performing stations</li>
+                    <li>Create a scatter plot showing weather impact</li>
+                    <li>Show seasonal trends in bike usage</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div id="loading" class="loading">
+            🤖 AI is thinking...
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000';
+        const sessionId = 'citibike-ai-' + Date.now();
+        const userId = 'citibike-user-' + Date.now();
+        
+        function addMessage(text, sender) {
+            console.log(`\nadding message: ${text}`);
+            const chatArea = document.getElementById('chatArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.innerHTML = text;
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+        
+        function showLoading(show) {
+            console.log(show ? 'Showing loading' : 'Hiding loading');
+            const loading = document.getElementById('loading');
+            loading.classList.toggle('show', show);
+        }
+        
+        function setButtonEnabled(enabled) {
+            console.log(enabled ? 'Enabling button' : 'Disabling button');
+            const button = document.getElementById('sendButton');
+            button.disabled = !enabled;
+        }
+        
+        async function sendMessage() {
+            console.log('🚀 Sending message: ' + document.getElementById('messageInput').value);
+            
+            try {
+                showLoading(true);
+                setButtonEnabled(false);
+                
+                const response = await fetch(`${API_BASE_URL}/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: document.getElementById('messageInput').value,
+                        query_category: 'general'
+                    })
+                });
+                
+                console.log('\n📊 Response status: ' + response.status);
+                
+                if (!response.ok) {
+                    console.error('❌ HTTP ' + response.status);
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                
+                console.log('📋 Response data:', data);
+                
+                // Add AI response
+                addMessage(data.response, 'agent');
+                
+                // Add visualizations if available
+                if (data.visualizations && data.visualizations.length > 0) {
+                    data.visualizations.forEach(viz => {
+                        console.log('📊 Adding visualization:', viz);
+                        console.log(`\n📊 Iframe url: ${API_BASE_URL}${viz.url}`);
+                        const vizMessage = `
+                            📊 <strong>${viz.title}</strong><br>
+                            ${viz.description}<br>
+                            <div style="margin: 15px 0; text-align: center;">
+                                <iframe src="${API_BASE_URL}${viz.url}" 
+                                        width="100%" 
+                                        height="400" 
+                                        frameborder="0"
+                                        style="border-radius: 8px; background: white;">
+                                </iframe>
+                                <div style="margin-top: 10px;">
+                                    <a href="${API_BASE_URL}${viz.url}" target="_blank" 
+                                       style="display: inline-block; padding: 6px 12px; background: #667eea; color: white; text-decoration: none; border-radius: 4px; font-size: 12px; margin-right: 10px;">
+                                        🔍 Open Full View
+                                    </a>
+                                    <small style="color: #888;">Data points: ${viz.data_points}</small>
+                                </div>
+                            </div>
+                        `;
+                        addMessage(vizMessage, 'agent');
+                    });
+                }
+                
+                // Add insights and recommendations
+                if (data.insights && data.insights.length > 0) {
+                    console.log('💡 Showing insights:', data.insights);
+                    const insightsHtml = `
+                        <div class="insights">
+                            <h5>💡 Key Insights:</h5>
+                            <ul>
+                                ${data.insights.map(insight => `<li>${insight}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                    addMessage(insightsHtml, 'agent');
+                }
+                
+                if (data.recommendations && data.recommendations.length > 0) {
+                    console.log('📈 Adding recommendations:', data.recommendations);
+                    const recommendationsHtml = `
+                        <div class="recommendations">
+                            <h5>📈 Recommendations:</h5>
+                            <ul>
+                                ${data.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                    addMessage(recommendationsHtml, 'agent');
+                }
+                
+                console.log('✅ Message sent and received successfully! ');
+                
+            } catch (error) {
+                console.error('❌ Error: ' + error.message);
+                console.log('❌ Error occurred: ' + error.message);
+                addMessage(`❌ Error: ${error.message}`, 'agent');
+            } finally {
+                console.log('🔧 Disabling loading');
+                console.log('🔧 Enabling button');
+                showLoading(false);
+                setButtonEnabled(true);
+            }
+        }
+        
+        // Allow Enter key to send message
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        console.log('🚀 Chat widget initialized successfully');
+        console.log('🚀 Session ID: ' + sessionId);
+        console.log('🚀 User ID: ' + userId);
+        
+        console.log('🚀 Starting chat widget...');
+        console.log('✅ chat widget is ready');
+    </script>
+</body>
+</html>

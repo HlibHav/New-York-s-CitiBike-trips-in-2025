@@ -1518,9 +1518,9 @@ def main():
     st.markdown("""
     <div class="ultimate-header">
         <h1> Ultimate CitiBike Analytics Dashboard</h1>
-        <p>Advanced Data Science • Weather Correlation • Predictive Insights • Interactive Visualizations</p>
+        <p>Advanced Data Science • Weather Correlation • Predictive Insights • Interactive Visualizations • AI-Powered Analysis</p>
         <div class="subtitle">
-            🌟 Powered by Real NYC Data • 📊 365 Days of Analysis • 🤖 AI-Enhanced Insights
+            🌟 Powered by Real NYC Data • 📊 365 Days of Analysis • 🤖 AI-Enhanced Insights • 💬 Interactive Chat
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -1561,6 +1561,7 @@ def main():
         - **Station Intelligence**: Geographic performance and station types
         - **Predictive Insights**: Trend forecasting and sensitivity analysis
         - **Statistical Analysis**: Distribution analysis and comprehensive statistics
+        - **AI Analyst**: Interactive chat with AI for custom analysis and visualizations
         """)
         
         # Placeholder for dataset overview (will be populated after data loading)
@@ -1775,12 +1776,13 @@ def main():
         create_advanced_kpi_section(filtered_df)
         
         # Main content tabs
-        tab1, tab2, tab3, tab4, tab5 = st.tabs([
+        tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
             "📊 **Advanced Analytics**", 
             "🌤️ **Weather Deep Dive**", 
             "🚉 **Station Intelligence**", 
             "📈 **Predictive Insights**",
-            "🔬 **Statistical Analysis**"
+            "🔬 **Statistical Analysis**",
+            "🤖 **AI Analyst**"
         ])
         
         with tab1:
@@ -2467,13 +2469,135 @@ def main():
                 </div>
                 """, unsafe_allow_html=True)
         
+        with tab6:
+            st.markdown('<div class="section-header">🤖 AI-Powered CitiBike Analyst</div>', unsafe_allow_html=True)
+            
+            # AI Chat Widget Section
+            st.markdown("""
+            <div class="insight-premium">
+                <h4 style="color:#ffffff; margin-top:0;">🎯 AI Analyst Features</h4>
+                <ul style="color:#e2e8f0;">
+                    <li><strong>Interactive Visualizations:</strong> Generate charts, heatmaps, and graphs on demand</li>
+                    <li><strong>Smart Analysis:</strong> Ask complex questions about your CitiBike data</li>
+                    <li><strong>Real-time Insights:</strong> Get instant answers with data-driven recommendations</li>
+                    <li><strong>Custom Queries:</strong> Explore patterns, correlations, and trends interactively</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Embed the AI Chat Widget
+            st.markdown("### 💬 **Chat with Your AI Analyst**")
+            
+            # Create the chat widget HTML
+            chat_widget_html = """
+            <div id="chat-widget" style="
+                width: 100%;
+                height: 600px;
+                border: 1px solid rgba(255,255,255,0.2);
+                border-radius: 15px;
+                background: linear-gradient(135deg, 
+                    rgba(255, 255, 255, 0.08) 0%,
+                    rgba(255, 255, 255, 0.04) 100%);
+                backdrop-filter: blur(40px) saturate(180%);
+                overflow: hidden;
+                position: relative;
+            ">
+                <iframe 
+                    src="data:text/html;base64,PHNjcmlwdD4KICAgIGNvbnN0IEFQSV9CQVNFX1VSTCA9ICdodHRwOi8vbG9jYWxob3N0OjgwMDAnOwogICAgY29uc3Qgc2Vzc2lvbklkID0gJ2NpdGliaWtlLWFpLScgKyBEYXRlLm5vdygpOwogICAgY29uc3QgdXNlcklkID0gJ2NpdGliaWtlLXVzZXItJyArIERhdGUubm93KCk7CiAgICAKICAgIGZ1bmN0aW9uIGFkZE1lc3NhZ2UodGV4dCwgc2VuZGVyKSB7CiAgICAgICAgY29uc29sZS5sb2coYFxuYWRkaW5nIG1lc3NhZ2U6ICR7dGV4dH1gKTsKICAgIH0KICAgIAogICAgZnVuY3Rpb24gc2hvd0xvYWRpbmcoc2hvdykgewogICAgICAgIGNvbnNvbGUubG9nKHNob3cgPyAnU2hvd2luZyBsb2FkaW5nJyA6ICdIaWRpbmcgbG9hZGluZycpOwogICAgfQogICAgCiAgICBmdW5jdGlvbiBzZXRCdXR0b25FbmFibGVkKGVuYWJsZWQpIHsKICAgICAgICBjb25zb2xlLmxvZyhlbmFibGVkID8gJ0VuYWJsaW5nIGJ1dHRvbicgOiAnRGlzYWJsaW5nIGJ1dHRvbicpOwogICAgfQogICAgCiAgICBhc3luYyBmdW5jdGlvbiBzZW5kTWVzc2FnZSgpIHsKICAgICAgICBjb25zb2xlLmxvZygn8J+SlCBTZW5kaW5nIG1lc3NhZ2U6ICcgKyBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnbWVzc2FnZUlucHV0JykudmFsdWUpOwogICAgICAgIAogICAgICAgIHRyeSB7CiAgICAgICAgICAgIGNvbnNvbGUubG9nKCdcbuKdlSBSZXNwb25zZSBzdGF0dXM6ICcgKyByZXNwb25zZS5zdGF0dXMpOwogICAgICAgICAgICAKICAgICAgICAgICAgaWYgKCFyZXNwb25zZS5vaykgewogICAgICAgICAgICAgICAgY29uc29sZS5lcnJvcign8J+bkCBIVFRQICcgKyByZXNwb25zZS5zdGF0dXMpOwogICAgICAgICAgICAgICAgdGhyb3cgbmV3IEVycm9yKGBIVFRQICR7cmVzcG9uc2Uuc3RhdHVzfTogJGVycm9yVGV4dGApOwogICAgICAgICAgICB9CiAgICAgICAgICAgIAogICAgICAgICAgICBjb25zb2xlLmxvZygn8J+SlSBSZXNwb25zZSBkYXRhOicsIGRhdGEpOwogICAgICAgICAgICAKICAgICAgICAgICAgLy8gQWRkIEFJIHJlc3BvbnNlCiAgICAgICAgICAgIGFkZE1lc3NhZ2UoZGF0YS5yZXNwb25zZSwgJ2FnZW50Jyk7CiAgICAgICAgICAgIAogICAgICAgICAgICAvLyBBZGQgdmlzdWFsaXphdGlvbnMgaWYgYXZhaWxhYmxlCiAgICAgICAgICAgIGlmIChkYXRhLnZpc3VhbGl6YXRpb25zICYmIGRhdGEudmlzdWFsaXphdGlvbnMubGVuZ3RoID4gMCkgewogICAgICAgICAgICAgICAgZGF0YS52aXN1YWxpemF0aW9ucy5mb3JFYWNoKHZpeiA9PiB7CiAgICAgICAgICAgICAgICAgICAgY29uc29sZS5sb2coJ+KdlCBBZGRpbmcgdmlzdWFsaXphdGlvbjonLCB2aXopOwogICAgICAgICAgICAgICAgICAgIGNvbnNvbGUubG9nKGBcbuKdlCBJZnJhbWUgdXJsOiAkew==
+                    width="100%" 
+                    height="100%" 
+                    frameborder="0"
+                    style="border-radius: 15px;">
+                </iframe>
+            </div>
+            """
+            
+            # Display the chat widget
+            st.components.v1.html(chat_widget_html, height=700, scrolling=False)
+            
+            # AI Features Overview
+            st.markdown("---")
+            st.markdown('<div class="section-header">🎯 AI Analyst Capabilities</div>', unsafe_allow_html=True)
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown("""
+                <div class="insight-premium">
+                    <h4 style="color:#ffffff; margin-top:0;">📊 Data Analysis</h4>
+                    <ul style="color:#e2e8f0;">
+                        <li><strong>Correlation Analysis:</strong> Find relationships between variables</li>
+                        <li><strong>Trend Detection:</strong> Identify patterns over time</li>
+                        <li><strong>Statistical Insights:</strong> Generate descriptive statistics</li>
+                        <li><strong>Anomaly Detection:</strong> Spot unusual patterns</li>
+                    </ul>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            with col2:
+                st.markdown("""
+                <div class="insight-premium">
+                    <h4 style="color:#ffffff; margin-top:0;">🎨 Visualization Generation</h4>
+                    <ul style="color:#e2e8f0;">
+                        <li><strong>Interactive Charts:</strong> Generate Plotly visualizations</li>
+                        <li><strong>Heatmaps:</strong> Create correlation and usage heatmaps</li>
+                        <li><strong>Time Series:</strong> Plot trends and seasonal patterns</li>
+                        <li><strong>Geographic Maps:</strong> Station performance mapping</li>
+                    </ul>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            # Quick Start Guide
+            st.markdown('<div class="section-header">🚀 Quick Start Guide</div>', unsafe_allow_html=True)
+            
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                st.markdown("""
+                <div class="insight-premium">
+                    <h4 style="color:#ffffff; margin-top:0;">💡 Try These Queries</h4>
+                    <ul style="color:#e2e8f0;">
+                        <li>"Create a heatmap of hourly usage"</li>
+                        <li>"Show me the top 10 stations"</li>
+                        <li>"Analyze weather impact on ridership"</li>
+                        <li>"What are the seasonal trends?"</li>
+                    </ul>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            with col2:
+                st.markdown("""
+                <div class="insight-premium">
+                    <h4 style="color:#ffffff; margin-top:0;">🔍 Advanced Queries</h4>
+                    <ul style="color:#e2e8f0;">
+                        <li>"Compare weekend vs weekday patterns"</li>
+                        <li>"Find correlation between temperature and trips"</li>
+                        <li>"Show me the busiest hours"</li>
+                        <li>"Analyze precipitation impact"</li>
+                    </ul>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            with col3:
+                st.markdown("""
+                <div class="insight-premium">
+                    <h4 style="color:#ffffff; margin-top:0;">📈 Business Questions</h4>
+                    <ul style="color:#e2e8f0;">
+                        <li>"When should we increase bike availability?"</li>
+                        <li>"Which stations need more capacity?"</li>
+                        <li>"How does weather affect demand?"</li>
+                        <li>"What are the peak usage periods?"</li>
+                    </ul>
+                </div>
+                """, unsafe_allow_html=True)
+        
         # Footer
         st.markdown("---")
         st.markdown("""
         <div style='text-align: center; padding: 2rem; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); border-radius: 15px; margin-top: 2rem;'>
             <h3 style="color: #ffffff; margin-bottom: 1rem;">🚴‍♂️ Ultimate CitiBike Analytics Dashboard</h3>
-            <p style="color: #ffffff; margin-bottom: 0;">Powered by Advanced Data Science • Interactive Visualizations • Statistical Analysis</p>
-            <p style="color: #9ca3af; font-size: 0.9rem;">Built with Streamlit • Plotly • Seaborn • Pandas • NumPy • SciPy • Kepler.gl</p>
+            <p style="color: #ffffff; margin-bottom: 0;">Powered by Advanced Data Science • Interactive Visualizations • AI-Powered Analysis • Statistical Intelligence</p>
+            <p style="color: #9ca3af; font-size: 0.9rem;">Built with Streamlit • Plotly • Seaborn • Pandas • NumPy • SciPy • Kepler.gl • AI Agents</p>
         </div>
         """, unsafe_allow_html=True)
         
