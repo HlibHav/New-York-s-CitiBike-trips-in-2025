@@ -118,13 +118,16 @@ def process_ai_query(query, df):
 
 def generate_hourly_heatmap(df):
     """Generate hourly usage heatmap"""
-    # Create sample hourly data
+    # Create sample hourly data with a simpler approach
     hours = list(range(24))
     days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     
+    # Create usage data matrix directly
     np.random.seed(42)
-    data = []
+    usage_matrix = []
+    
     for day in days:
+        day_usage = []
         for hour in hours:
             if day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']:
                 if hour in [7, 8, 17, 18]:
@@ -141,23 +144,28 @@ def generate_hourly_heatmap(df):
                 else:
                     base_usage = np.random.normal(300, 80)
             
-            data.append([day, hour, max(0, base_usage)])
+            day_usage.append(max(0, base_usage))
+        usage_matrix.append(day_usage)
     
-    heatmap_df = pd.DataFrame(data, columns=['Day', 'Hour', 'Usage'])
-    pivot_df = heatmap_df.pivot(index='Day', columns='Hour', values='Usage')
+    # Convert to numpy array for imshow
+    usage_matrix = np.array(usage_matrix)
     
-    fig = px.imshow(
-        pivot_df.values,
-        x=pivot_df.columns,
-        y=pivot_df.index,
-        color_continuous_scale='Blues',
-        title="Hourly Usage Patterns Heatmap"
-    )
+    # Create the heatmap using go.Heatmap for more control
+    fig = go.Figure(data=go.Heatmap(
+        z=usage_matrix,
+        x=hours,
+        y=days,
+        colorscale='Blues',
+        showscale=True,
+        colorbar=dict(title="Usage")
+    ))
     
     fig.update_layout(
+        title="Hourly Usage Patterns Heatmap",
         xaxis_title="Hour of Day",
         yaxis_title="Day of Week",
-        height=500
+        height=500,
+        width=800
     )
     
     return fig
