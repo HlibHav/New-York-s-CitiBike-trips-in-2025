@@ -2488,32 +2488,13 @@ def main():
             # Embed the AI Chat Widget
             st.markdown("### 💬 **Chat with Your AI Analyst**")
             
-            # Create the chat widget HTML
-            chat_widget_html = """
-            <div id="chat-widget" style="
-                width: 100%;
-                height: 600px;
-                border: 1px solid rgba(255,255,255,0.2);
-                border-radius: 15px;
-                background: linear-gradient(135deg, 
-                    rgba(255, 255, 255, 0.08) 0%,
-                    rgba(255, 255, 255, 0.04) 100%);
-                backdrop-filter: blur(40px) saturate(180%);
-                overflow: hidden;
-                position: relative;
-            ">
-                <iframe 
-                    src="data:text/html;base64,PHNjcmlwdD4KICAgIGNvbnN0IEFQSV9CQVNFX1VSTCA9ICdodHRwOi8vbG9jYWxob3N0OjgwMDAnOwogICAgY29uc3Qgc2Vzc2lvbklkID0gJ2NpdGliaWtlLWFpLScgKyBEYXRlLm5vdygpOwogICAgY29uc3QgdXNlcklkID0gJ2NpdGliaWtlLXVzZXItJyArIERhdGUubm93KCk7CiAgICAKICAgIGZ1bmN0aW9uIGFkZE1lc3NhZ2UodGV4dCwgc2VuZGVyKSB7CiAgICAgICAgY29uc29sZS5sb2coYFxuYWRkaW5nIG1lc3NhZ2U6ICR7dGV4dH1gKTsKICAgIH0KICAgIAogICAgZnVuY3Rpb24gc2hvd0xvYWRpbmcoc2hvdykgewogICAgICAgIGNvbnNvbGUubG9nKHNob3cgPyAnU2hvd2luZyBsb2FkaW5nJyA6ICdIaWRpbmcgbG9hZGluZycpOwogICAgfQogICAgCiAgICBmdW5jdGlvbiBzZXRCdXR0b25FbmFibGVkKGVuYWJsZWQpIHsKICAgICAgICBjb25zb2xlLmxvZyhlbmFibGVkID8gJ0VuYWJsaW5nIGJ1dHRvbicgOiAnRGlzYWJsaW5nIGJ1dHRvbicpOwogICAgfQogICAgCiAgICBhc3luYyBmdW5jdGlvbiBzZW5kTWVzc2FnZSgpIHsKICAgICAgICBjb25zb2xlLmxvZygn8J+SlCBTZW5kaW5nIG1lc3NhZ2U6ICcgKyBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnbWVzc2FnZUlucHV0JykudmFsdWUpOwogICAgICAgIAogICAgICAgIHRyeSB7CiAgICAgICAgICAgIGNvbnNvbGUubG9nKCdcbuKdlSBSZXNwb25zZSBzdGF0dXM6ICcgKyByZXNwb25zZS5zdGF0dXMpOwogICAgICAgICAgICAKICAgICAgICAgICAgaWYgKCFyZXNwb25zZS5vaykgewogICAgICAgICAgICAgICAgY29uc29sZS5lcnJvcign8J+bkCBIVFRQICcgKyByZXNwb25zZS5zdGF0dXMpOwogICAgICAgICAgICAgICAgdGhyb3cgbmV3IEVycm9yKGBIVFRQICR7cmVzcG9uc2Uuc3RhdHVzfTogJGVycm9yVGV4dGApOwogICAgICAgICAgICB9CiAgICAgICAgICAgIAogICAgICAgICAgICBjb25zb2xlLmxvZygn8J+SlSBSZXNwb25zZSBkYXRhOicsIGRhdGEpOwogICAgICAgICAgICAKICAgICAgICAgICAgLy8gQWRkIEFJIHJlc3BvbnNlCiAgICAgICAgICAgIGFkZE1lc3NhZ2UoZGF0YS5yZXNwb25zZSwgJ2FnZW50Jyk7CiAgICAgICAgICAgIAogICAgICAgICAgICAvLyBBZGQgdmlzdWFsaXphdGlvbnMgaWYgYXZhaWxhYmxlCiAgICAgICAgICAgIGlmIChkYXRhLnZpc3VhbGl6YXRpb25zICYmIGRhdGEudmlzdWFsaXphdGlvbnMubGVuZ3RoID4gMCkgewogICAgICAgICAgICAgICAgZGF0YS52aXN1YWxpemF0aW9ucy5mb3JFYWNoKHZpeiA9PiB7CiAgICAgICAgICAgICAgICAgICAgY29uc29sZS5sb2coJ+KdlCBBZGRpbmcgdmlzdWFsaXphdGlvbjonLCB2aXopOwogICAgICAgICAgICAgICAgICAgIGNvbnNvbGUubG9nKGBcbuKdlCBJZnJhbWUgdXJsOiAkew==
-                    width="100%" 
-                    height="100%" 
-                    frameborder="0"
-                    style="border-radius: 15px;">
-                </iframe>
-            </div>
-            """
-            
-            # Display the chat widget
-            st.components.v1.html(chat_widget_html, height=700, scrolling=False)
+            # Import and use the Streamlit AI chat component
+            try:
+                from streamlit_ai_chat import main as ai_chat_main
+                ai_chat_main()
+            except ImportError:
+                st.error("AI chat component not available. Please ensure streamlit_ai_chat.py is in the same directory.")
+                st.info("You can still use all other dashboard features!")
             
             # AI Features Overview
             st.markdown("---")
