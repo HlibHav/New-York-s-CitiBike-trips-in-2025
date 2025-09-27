@@ -37,6 +37,122 @@ advanced_palettes = {
 # Set professional palette
 sns.set_palette(subtle_colors)
 
+# ===== LANGCHAIN INTEGRATION FUNCTIONS =====
+import requests
+import json
+from typing import Dict, Any, Optional
+
+def check_langchain_backend() -> bool:
+    """Check if LangChain backend is available"""
+    try:
+        response = requests.get("http://localhost:8000/health", timeout=2)
+        return response.status_code == 200
+    except:
+        return False
+
+def query_langchain(query: str, df: pd.DataFrame) -> None:
+    """Query the LangChain backend and display results"""
+    
+    # Initialize chat history if not exists
+    if "langchain_messages" not in st.session_state:
+        st.session_state.langchain_messages = []
+    
+    # Add user message
+    st.session_state.langchain_messages.append({
+        "role": "user",
+        "content": query
+    })
+    
+    try:
+        # Load data into LangChain system
+        data_request = {
+            "data": df.head(1000).to_dict(),  # Send sample for performance
+            "data_type": "dataframe"
+        }
+        
+        load_response = requests.post(
+            "http://localhost:8000/load-data",
+            json=data_request,
+            timeout=10
+        )
+        
+        if load_response.status_code != 200:
+            st.error(f"Failed to load data: {load_response.text}")
+            return
+        
+        # Query the LangChain system
+        query_request = {
+            "query": query,
+            "user_id": "streamlit_user",
+            "session_id": "main_session"
+        }
+        
+        with st.spinner("🤖 LangChain AI is analyzing your data..."):
+            response = requests.post(
+                "http://localhost:8000/query",
+                json=query_request,
+                timeout=30
+            )
+        
+        if response.status_code == 200:
+            result = response.json()
+            
+            # Add AI response to chat history
+            ai_message = {
+                "role": "ai",
+                "content": result["response"],
+                "insights": result["insights"],
+                "recommendations": result["recommendations"],
+                "execution_time": result["execution_time"]
+            }
+            
+            # Try to generate a chart if insights suggest visualization
+            chart = None
+            if any(word in query.lower() for word in ["heatmap", "hourly", "patterns"]):
+                chart = generate_hourly_heatmap(df)
+            elif any(word in query.lower() for word in ["station", "top", "popular"]):
+                chart = generate_station_analysis(df)
+            elif any(word in query.lower() for word in ["weather", "temperature"]):
+                chart = generate_weather_correlation(df)
+            elif any(word in query.lower() for word in ["seasonal", "trend"]):
+                chart = generate_seasonal_trends(df)
+            
+            if chart:
+                ai_message["chart"] = chart
+            
+            st.session_state.langchain_messages.append(ai_message)
+            
+            # Display the response immediately
+            st.markdown("---")
+            st.markdown(f"**🤖 AI Analysis: {query}**")
+            st.markdown(result["response"])
+            
+            if result["insights"]:
+                st.markdown("**💡 Key Insights:**")
+                for insight in result["insights"]:
+                    st.markdown(f"• {insight}")
+            
+            if result["recommendations"]:
+                st.markdown("**📈 Recommendations:**")
+                for rec in result["recommendations"]:
+                    st.markdown(f"• {rec}")
+            
+            if chart:
+                st.plotly_chart(chart, use_container_width=True)
+            
+            # Show execution details
+            st.caption(f"⏱️ Analysis completed in {result['execution_time']:.2f} seconds")
+            
+        else:
+            st.error(f"AI analysis failed: {response.text}")
+            
+    except requests.exceptions.Timeout:
+        st.error("⏰ AI analysis timed out. The query might be too complex.")
+    except requests.exceptions.ConnectionError:
+        st.error("🔌 Cannot connect to LangChain backend. Please start the server.")
+    except Exception as e:
+        st.error(f"❌ Error: {str(e)}")
+
 # ===== AI PROCESSING FUNCTIONS =====
 def process_ai_query(query, df):
     """Process AI query and generate appropriate response"""
@@ -2871,147 +2987,220 @@ def main():
             </div>
             """, unsafe_allow_html=True)
             
-            # Enhanced AI Analysis Interface
-            st.markdown("### 💬 **AI Data Analysis**")
+            # LangChain AI Analysis Interface
+            st.markdown("### 🤖 **LangChain AI Analyst**")
             
-            # Quick action buttons first
-            st.markdown("**🚀 Quick Analyses:**")
+            # Check if LangChain backend is available
+            langchain_available = check_langchain_backend()
             
-            col1, col2, col3, col4 = st.columns(4)
-            
-            analysis_type = None
-            
-            with col1:
-                if st.button("📊 Hourly Heatmap", key="heatmap_btn"):
-                    analysis_type = "heatmap"
-            
-            with col2:
-                if st.button("🏆 Top Stations", key="stations_btn"):
-                    analysis_type = "stations"
-            
-            with col3:
-                if st.button("🌤️ Weather Impact", key="weather_btn"):
-                    analysis_type = "weather"
-            
-            with col4:
-                if st.button("🍂 Seasonal Trends", key="seasonal_btn"):
-                    analysis_type = "seasonal"
-            
-            # Custom question input
-            st.markdown("---")
-            st.markdown("**🤖 Ask a Custom Question:**")
-            
-            col1, col2 = st.columns([4, 1])
-            
-            with col1:
-                custom_question = st.text_input(
-                    "Ask me anything about your CitiBike data:",
-                    placeholder="e.g., 'Show me trips on the map', 'Identify optimal staffing periods', 'Find peak usage times'",
-                    key="custom_question_input"
-                )
-            
-            with col2:
-                ask_button = st.button("Ask", type="primary", key="ask_custom_btn")
-            
-            # Process custom question
-            if ask_button and custom_question:
-                analysis_type = "custom"
-                custom_query = custom_question
-            
-            # Process the selected analysis
-            if analysis_type:
-                with st.spinner("🤖 AI is analyzing your data..."):
-                    if analysis_type == "heatmap":
-                        query = "Create a heatmap of hourly usage patterns"
-                        response = "I've generated an hourly usage heatmap showing peak patterns throughout the week!"
-                        chart = generate_hourly_heatmap(filtered_df)
-                        insights = [
-                            "Peak usage occurs during morning (7-9 AM) and evening (5-7 PM) rush hours",
-                            "Weekend patterns show more consistent usage throughout the day",
-                            "Business districts show highest weekday peak hour usage"
-                        ]
-                        recommendations = [
-                            "Consider increasing bike availability during peak hours",
-                            "Optimize rebalancing operations for morning and evening rushes"
-                        ]
-                    
-                    elif analysis_type == "stations":
-                        query = "Show me the top 10 stations"
-                        response = "Here are the top 10 performing CitiBike stations based on usage data!"
-                        chart = generate_station_analysis(filtered_df)
-                        insights = [
-                            "Business districts and transit hubs show highest usage",
-                            "Station performance varies significantly across locations",
-                            "Manhattan stations dominate the top performers list"
-                        ]
-                        recommendations = [
-                            "Focus expansion efforts on high-performing areas",
-                            "Consider station capacity upgrades for top performers"
-                        ]
-                    
-                    elif analysis_type == "weather":
-                        query = "Analyze weather impact on ridership"
-                        response = "I've analyzed the correlation between weather conditions and bike ridership!"
-                        chart = generate_weather_correlation(filtered_df)
-                        insights = [
-                            "Strong positive correlation between temperature and ridership",
-                            "Precipitation significantly reduces bike usage",
-                            "Wind speed has moderate impact on ridership"
-                        ]
-                        recommendations = [
-                            "Monitor weather forecasts for demand planning",
-                            "Adjust fleet size based on weather predictions"
-                        ]
-                    
-                    elif analysis_type == "seasonal":
-                        query = "What are the seasonal trends?"
-                        response = "Here's the seasonal analysis showing how bike usage changes throughout the year!"
-                        chart = generate_seasonal_trends(filtered_df)
-                        insights = [
-                            "Summer and fall show highest ridership",
-                            "Winter months experience the lowest usage",
-                            "Spring shows gradual increase from winter lows"
-                        ]
-                        recommendations = [
-                            "Adjust fleet size based on seasonal patterns",
-                            "Plan maintenance during low-usage winter months"
-                        ]
-                    
-                    elif analysis_type == "custom":
-                        query = custom_query
-                        response, insights, recommendations, chart = process_custom_query(custom_query, filtered_df)
+            if langchain_available:
+                st.success("✅ **LangChain AI System Connected** - Real AI analysis powered by OpenAI GPT-4")
                 
-                # Display the analysis results
+                # Quick action buttons
+                st.markdown("**🚀 Quick AI Analyses:**")
+                
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
+                    if st.button("📊 Usage Patterns", key="ai_heatmap_btn"):
+                        query_langchain("Create a comprehensive heatmap showing hourly usage patterns throughout the week", filtered_df)
+                
+                with col2:
+                    if st.button("🏆 Top Stations", key="ai_stations_btn"):
+                        query_langchain("Analyze and show me the top 10 most popular CitiBike stations with detailed statistics", filtered_df)
+                
+                with col3:
+                    if st.button("🌤️ Weather Impact", key="ai_weather_btn"):
+                        query_langchain("Analyze how weather conditions affect bike ridership patterns and demand", filtered_df)
+                
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
+                    if st.button("🍂 Seasonal Trends", key="ai_seasonal_btn"):
+                        query_langchain("Show seasonal patterns and trends in bike usage throughout the year", filtered_df)
+                
+                with col2:
+                    if st.button("🔮 Demand Forecasting", key="ai_forecast_btn"):
+                        query_langchain("Predict future demand based on historical patterns and provide forecasting insights", filtered_df)
+                
+                with col3:
+                    if st.button("⚡ Efficiency Analysis", key="ai_efficiency_btn"):
+                        query_langchain("Analyze operational efficiency metrics and identify optimization opportunities", filtered_df)
+                
+                # Custom question input
                 st.markdown("---")
-                st.markdown(f"**🤖 AI Analysis: {query}**")
-                st.markdown(response)
+                st.markdown("**💬 Ask Your AI Analyst:**")
                 
-                # Display insights
-                if insights:
-                    st.markdown("**💡 Key Insights:**")
-                    for insight in insights:
-                        st.markdown(f"• {insight}")
+                col1, col2 = st.columns([4, 1])
                 
-                # Display recommendations
-                if recommendations:
-                    st.markdown("**📈 Recommendations:**")
-                    for rec in recommendations:
-                        st.markdown(f"• {rec}")
+                with col1:
+                    custom_question = st.text_input(
+                        "Ask anything about your CitiBike data:",
+                        placeholder="e.g., 'Show me trips on the map', 'Identify optimal staffing periods', 'Analyze user behavior patterns'",
+                        key="langchain_question_input"
+                    )
                 
-                # Display chart
-                if chart:
-                    st.plotly_chart(chart, use_container_width=True)
-            
+                with col2:
+                    ask_button = st.button("Ask AI", type="primary", key="ask_langchain_btn")
+                
+                # Process custom question
+                if ask_button and custom_question:
+                    query_langchain(custom_question, filtered_df)
+                
+                # Display chat history if available
+                if "langchain_messages" in st.session_state and st.session_state.langchain_messages:
+                    st.markdown("---")
+                    st.markdown("**💬 AI Conversation History:**")
+                    
+                    for message in st.session_state.langchain_messages[-5:]:  # Show last 5 messages
+                        if message["role"] == "user":
+                            st.markdown(f"""
+                            <div style="
+                                background: #667eea; 
+                                color: white; 
+                                padding: 10px 15px; 
+                                border-radius: 18px 18px 5px 18px; 
+                                margin: 10px 0; 
+                                margin-left: 20%; 
+                                text-align: right;
+                            ">
+                                <strong>You:</strong> {message["content"]}
+                            </div>
+                            """, unsafe_allow_html=True)
+                        else:
+                            st.markdown(f"""
+                            <div style="
+                                background: #2a2a2a; 
+                                color: white; 
+                                padding: 10px 15px; 
+                                border-radius: 18px 18px 18px 5px; 
+                                margin: 10px 0; 
+                                margin-right: 20%;
+                            ">
+                                <strong>🤖 AI Analyst:</strong> {message["content"]}
+                            </div>
+                            """, unsafe_allow_html=True)
+                            
+                            if "insights" in message:
+                                st.markdown("**💡 Key Insights:**")
+                                for insight in message["insights"]:
+                                    st.markdown(f"• {insight}")
+                            
+                            if "recommendations" in message:
+                                st.markdown("**📈 Recommendations:**")
+                                for rec in message["recommendations"]:
+                                    st.markdown(f"• {rec}")
+                            
+                            if "chart" in message and message["chart"]:
+                                st.plotly_chart(message["chart"], use_container_width=True)
+                
             else:
-                # Show welcome message when no analysis is selected
-                st.markdown("---")
-                st.info("👆 **Select an analysis above to get AI-powered insights about your CitiBike data!**")
+                st.warning("⚠️ **LangChain AI System Not Available** - Using fallback analysis")
+                st.info("To enable full AI capabilities, start the LangChain backend server:")
+                st.code("python backend/langchain_api_server.py")
                 
-                st.markdown("**Available Analyses:**")
-                st.markdown("• **📊 Hourly Heatmap**: See usage patterns by day and hour")
-                st.markdown("• **🏆 Top Stations**: Discover the most popular stations")
-                st.markdown("• **🌤️ Weather Impact**: Understand how weather affects ridership")
-                st.markdown("• **🍂 Seasonal Trends**: Explore seasonal usage patterns")
+                # Fallback to original system
+                st.markdown("**🚀 Quick Analyses (Fallback):**")
+                
+                col1, col2, col3, col4 = st.columns(4)
+                
+                analysis_type = None
+                
+                with col1:
+                    if st.button("📊 Hourly Heatmap", key="fallback_heatmap_btn"):
+                        analysis_type = "heatmap"
+                
+                with col2:
+                    if st.button("🏆 Top Stations", key="fallback_stations_btn"):
+                        analysis_type = "stations"
+                
+                with col3:
+                    if st.button("🌤️ Weather Impact", key="fallback_weather_btn"):
+                        analysis_type = "weather"
+                
+                with col4:
+                    if st.button("🍂 Seasonal Trends", key="fallback_seasonal_btn"):
+                        analysis_type = "seasonal"
+                
+                # Process fallback analysis
+                if analysis_type:
+                    with st.spinner("🤖 Processing analysis..."):
+                        if analysis_type == "heatmap":
+                            query = "Create a heatmap of hourly usage patterns"
+                            response = "I've generated an hourly usage heatmap showing peak patterns throughout the week!"
+                            chart = generate_hourly_heatmap(filtered_df)
+                            insights = [
+                                "Peak usage occurs during morning (7-9 AM) and evening (5-7 PM) rush hours",
+                                "Weekend patterns show more consistent usage throughout the day",
+                                "Business districts show highest weekday peak hour usage"
+                            ]
+                            recommendations = [
+                                "Consider increasing bike availability during peak hours",
+                                "Optimize rebalancing operations for morning and evening rushes"
+                            ]
+                        
+                        elif analysis_type == "stations":
+                            query = "Show me the top 10 stations"
+                            response = "Here are the top 10 performing CitiBike stations based on usage data!"
+                            chart = generate_station_analysis(filtered_df)
+                            insights = [
+                                "Business districts and transit hubs show highest usage",
+                                "Station performance varies significantly across locations",
+                                "Manhattan stations dominate the top performers list"
+                            ]
+                            recommendations = [
+                                "Focus expansion efforts on high-performing areas",
+                                "Consider station capacity upgrades for top performers"
+                            ]
+                        
+                        elif analysis_type == "weather":
+                            query = "Analyze weather impact on ridership"
+                            response = "I've analyzed the correlation between weather conditions and bike ridership!"
+                            chart = generate_weather_correlation(filtered_df)
+                            insights = [
+                                "Strong positive correlation between temperature and ridership",
+                                "Precipitation significantly reduces bike usage",
+                                "Wind speed has moderate impact on ridership"
+                            ]
+                            recommendations = [
+                                "Monitor weather forecasts for demand planning",
+                                "Adjust fleet size based on weather predictions"
+                            ]
+                        
+                        elif analysis_type == "seasonal":
+                            query = "What are the seasonal trends?"
+                            response = "Here's the seasonal analysis showing how bike usage changes throughout the year!"
+                            chart = generate_seasonal_trends(filtered_df)
+                            insights = [
+                                "Summer and fall show highest ridership",
+                                "Winter months experience the lowest usage",
+                                "Spring shows gradual increase from winter lows"
+                            ]
+                            recommendations = [
+                                "Adjust fleet size based on seasonal patterns",
+                                "Plan maintenance during low-usage winter months"
+                            ]
+                    
+                    # Display the analysis results
+                    st.markdown("---")
+                    st.markdown(f"**🤖 Analysis: {query}**")
+                    st.markdown(response)
+                    
+                    # Display insights
+                    if insights:
+                        st.markdown("**💡 Key Insights:**")
+                        for insight in insights:
+                            st.markdown(f"• {insight}")
+                    
+                    # Display recommendations
+                    if recommendations:
+                        st.markdown("**📈 Recommendations:**")
+                        for rec in recommendations:
+                            st.markdown(f"• {rec}")
+                    
+                    # Display chart
+                    if chart:
+                        st.plotly_chart(chart, use_container_width=True)
             
             # AI Features Overview
             st.markdown("---")

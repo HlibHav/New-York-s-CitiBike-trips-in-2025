@@ -1,0 +1,36 @@
+# Core LangChain and AI Dependencies
+langchain==0.1.0
+langchain-openai==0.0.5
+langchain-community==0.0.10
+langgraph==0.0.20
+
+# OpenAI and LLM
+openai==1.6.1
+
+# Jupyter and Code Execution
+jupyter-client==8.6.0
+jupyter-kernel-gateway==2.6.0
+ipykernel==6.29.0
+
+# Data Processing and Visualization
+pandas==2.1.4
+numpy==1.24.3
+plotly==5.17.0
+seaborn==0.12.2
+matplotlib==3.8.2
+
+# Web Framework
+fastapi==0.108.0
+uvicorn==0.25.0
+streamlit==1.29.0
+
+# Observability and Monitoring
+phoenix==2.4.2
+opentelemetry-api==1.22.0
+opentelemetry-sdk==1.22.0
+opentelemetry-instrumentation==0.42b0
+
+# Utilities
+python-dotenv==1.0.0
+pydantic==2.5.2
+httpx==0.26.0
