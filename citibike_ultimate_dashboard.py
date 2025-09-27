@@ -70,9 +70,16 @@ def query_langchain(query: str, df: pd.DataFrame) -> None:
     })
     
     try:
-        # Load data into LangChain system
+        # Load data into LangChain system - Convert Timestamps to strings for JSON serialization
+        df_sample = df.head(1000).copy()
+        
+        # Convert datetime columns to strings to avoid JSON serialization errors
+        datetime_columns = df_sample.select_dtypes(include=['datetime64']).columns
+        for col in datetime_columns:
+            df_sample[col] = df_sample[col].dt.strftime('%Y-%m-%d %H:%M:%S')
+        
         data_request = {
-            "data": df.head(1000).to_dict(),  # Send sample for performance
+            "data": df_sample.to_dict(),  # Send sample for performance
             "data_type": "dataframe"
         }
         
@@ -83,7 +90,7 @@ def query_langchain(query: str, df: pd.DataFrame) -> None:
         )
         
         if load_response.status_code != 200:
-            st.error(f"Failed to load data: {load_response.text}")
+            st.error(f"❌ Failed to load data into LangChain system: {load_response.text}")
             return
         
         # Query the LangChain system
@@ -156,8 +163,13 @@ def query_langchain(query: str, df: pd.DataFrame) -> None:
         st.error("⏰ AI analysis timed out. The query might be too complex.")
     except requests.exceptions.ConnectionError:
         st.error("🔌 Cannot connect to LangChain backend. Please start the server.")
+    except ValueError as e:
+        if "not JSON serializable" in str(e):
+            st.error("❌ Data serialization error. Please try a simpler query or check your data format.")
+        else:
+            st.error(f"❌ Data error: {str(e)}")
     except Exception as e:
-        st.error(f"❌ Error: {str(e)}")
+        st.error(f"❌ Unexpected error: {str(e)}")
 
 # ===== AI PROCESSING FUNCTIONS =====
 def process_ai_query(query, df):
@@ -3366,5 +3378,5 @@ def main():
         st.error("❌ Unable to load data. Please ensure the data file exists.")
 
 if __name__ == "__main__":
-    # Force deployment update - Sept 27, 2025 13:30 CET - Enhanced AI fallback system with better UX
+    # Force deployment update - Sept 27, 2025 13:45 CET - Fixed JSON serialization error for Timestamp objects
     main()
