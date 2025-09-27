@@ -40,7 +40,33 @@ sns.set_palette(subtle_colors)
 # ===== LANGCHAIN INTEGRATION FUNCTIONS =====
 import requests
 import json
+import numpy as np
 from typing import Dict, Any, Optional
+
+def clean_dataframe_for_json(df):
+    """Clean DataFrame to ensure JSON serialization compatibility"""
+    df_clean = df.copy()
+    
+    # Handle datetime columns
+    datetime_columns = df_clean.select_dtypes(include=['datetime64']).columns
+    for col in datetime_columns:
+        df_clean[col] = df_clean[col].dt.strftime('%Y-%m-%d %H:%M:%S')
+    
+    # Handle NaN, infinity, and other problematic values
+    df_clean = df_clean.replace([np.inf, -np.inf], None)  # Replace infinity with None
+    df_clean = df_clean.where(pd.notnull(df_clean), None)  # Replace NaN with None
+    
+    # Convert numpy types to Python native types
+    for col in df_clean.columns:
+        if df_clean[col].dtype == 'object':
+            # Handle mixed types in object columns
+            df_clean[col] = df_clean[col].astype(str)
+        elif df_clean[col].dtype in ['int64', 'int32']:
+            df_clean[col] = df_clean[col].astype(int)
+        elif df_clean[col].dtype in ['float64', 'float32']:
+            df_clean[col] = df_clean[col].astype(float)
+    
+    return df_clean
 
 def check_langchain_backend() -> bool:
     """Check if LangChain backend is available"""
@@ -70,13 +96,8 @@ def query_langchain(query: str, df: pd.DataFrame) -> None:
     })
     
     try:
-        # Load data into LangChain system - Convert Timestamps to strings for JSON serialization
-        df_sample = df.head(1000).copy()
-        
-        # Convert datetime columns to strings to avoid JSON serialization errors
-        datetime_columns = df_sample.select_dtypes(include=['datetime64']).columns
-        for col in datetime_columns:
-            df_sample[col] = df_sample[col].dt.strftime('%Y-%m-%d %H:%M:%S')
+        # Load data into LangChain system - Clean data for JSON serialization
+        df_sample = clean_dataframe_for_json(df.head(1000))
         
         data_request = {
             "data": df_sample.to_dict(),  # Send sample for performance
@@ -166,8 +187,15 @@ def query_langchain(query: str, df: pd.DataFrame) -> None:
     except ValueError as e:
         if "not JSON serializable" in str(e):
             st.error("❌ Data serialization error. Please try a simpler query or check your data format.")
+        elif "not JSON compliant" in str(e):
+            st.error("❌ Data contains invalid values (NaN, infinity). Please check your data quality.")
         else:
             st.error(f"❌ Data error: {str(e)}")
+    except TypeError as e:
+        if "not JSON serializable" in str(e):
+            st.error("❌ Data type serialization error. Converting data types...")
+        else:
+            st.error(f"❌ Type error: {str(e)}")
     except Exception as e:
         st.error(f"❌ Unexpected error: {str(e)}")
 
@@ -3378,5 +3406,5 @@ def main():
         st.error("❌ Unable to load data. Please ensure the data file exists.")
 
 if __name__ == "__main__":
-    # Force deployment update - Sept 27, 2025 13:45 CET - Fixed JSON serialization error for Timestamp objects
+    # Force deployment update - Sept 27, 2025 13:50 CET - Fixed NaN values JSON serialization error
     main()
