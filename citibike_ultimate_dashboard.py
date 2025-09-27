@@ -2822,8 +2822,7 @@ def main():
                     
                     st.session_state.ai_messages.append(ai_message)
                     
-                    # Clear input and rerun
-                    st.session_state.ai_user_input = ""
+                    # Rerun to show the new message
                     st.rerun()
             
             # Quick action buttons
