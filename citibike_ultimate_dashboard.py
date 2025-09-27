@@ -3101,12 +3101,40 @@ def main():
                                 st.plotly_chart(message["chart"], use_container_width=True)
                 
             else:
-                st.warning("⚠️ **LangChain AI System Not Available** - Using fallback analysis")
-                st.info("To enable full AI capabilities, start the LangChain backend server:")
-                st.code("python backend/langchain_api_server.py")
+                st.info("🤖 **AI-Powered Analysis Available Locally**")
+                st.markdown("""
+                <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); 
+                            padding: 1.5rem; border-radius: 15px; border: 1px solid rgba(102, 126, 234, 0.3);">
+                    <h4 style="color: #667eea; margin-top: 0;">🚀 Full AI Capabilities Available Locally</h4>
+                    <p style="color: #e2e8f0; margin-bottom: 1rem;">
+                        To experience the full AI-powered analysis with OpenAI GPT-4, run this dashboard locally:
+                    </p>
+                    <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 10px; margin: 1rem 0;">
+                        <strong style="color: #10b981;">Local Setup Commands:</strong><br>
+                        <code style="background: rgba(255,255,255,0.1); padding: 0.5rem; border-radius: 5px; display: block; margin-top: 0.5rem;">
+                        # Start LangChain backend server<br>
+                        python backend/simple_api_server.py<br><br>
+                        # Start dashboard (in another terminal)<br>
+                        streamlit run citibike_ultimate_dashboard.py --server.port 8505
+                        </code>
+                    </div>
+                    <p style="color: #f59e0b; margin-bottom: 0;">
+                        ✨ <strong>Features:</strong> Real AI analysis, dynamic visualizations, natural language queries, 
+                        OpenAI GPT-4 integration, and intelligent insights!
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
                 
-                # Fallback to original system
-                st.markdown("**🚀 Quick Analyses (Fallback):**")
+                # Enhanced fallback system with better explanations
+                st.markdown("**🚀 Interactive Analysis Tools (Cloud Version):**")
+                st.markdown("""
+                <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 10px; margin: 1rem 0;">
+                    <p style="color: #e2e8f0; margin-bottom: 0;">
+                        💡 <strong>Note:</strong> These are rule-based analyses. For AI-powered insights with natural language processing, 
+                        run the dashboard locally with the LangChain backend server.
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
                 
                 col1, col2, col3, col4 = st.columns(4)
                 
@@ -3127,6 +3155,45 @@ def main():
                 with col4:
                     if st.button("🍂 Seasonal Trends", key="fallback_seasonal_btn"):
                         analysis_type = "seasonal"
+                
+                # Custom question input for fallback
+                st.markdown("---")
+                st.markdown("**💬 Ask Your Data Analyst:**")
+                
+                col1, col2 = st.columns([4, 1])
+                
+                with col1:
+                    fallback_question = st.text_input(
+                        "Ask about your CitiBike data:",
+                        placeholder="e.g., 'Show me usage patterns', 'Analyze station performance', 'Weather impact analysis'",
+                        key="fallback_question_input"
+                    )
+                
+                with col2:
+                    ask_fallback_button = st.button("Analyze", type="primary", key="ask_fallback_btn")
+                
+                # Process custom fallback question
+                if ask_fallback_button and fallback_question:
+                    with st.spinner("🔍 Analyzing your question..."):
+                        response, insights, recommendations, chart = process_custom_query(fallback_question, filtered_df)
+                        
+                        # Display results
+                        st.markdown("---")
+                        st.markdown(f"**🔍 Analysis: {fallback_question}**")
+                        st.markdown(response)
+                        
+                        if insights:
+                            st.markdown("**💡 Key Insights:**")
+                            for insight in insights:
+                                st.markdown(f"• {insight}")
+                        
+                        if recommendations:
+                            st.markdown("**📈 Recommendations:**")
+                            for rec in recommendations:
+                                st.markdown(f"• {rec}")
+                        
+                        if chart:
+                            st.plotly_chart(chart, use_container_width=True)
                 
                 # Process fallback analysis
                 if analysis_type:
@@ -3290,7 +3357,8 @@ def main():
         <div style='text-align: center; padding: 2rem; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); border-radius: 15px; margin-top: 2rem;'>
             <h3 style="color: #ffffff; margin-bottom: 1rem;">🚴‍♂️ Ultimate CitiBike Analytics Dashboard</h3>
             <p style="color: #ffffff; margin-bottom: 0;">Powered by Advanced Data Science • Interactive Visualizations • AI-Powered Analysis • Statistical Intelligence</p>
-            <p style="color: #9ca3af; font-size: 0.9rem;">Built with Streamlit • Plotly • Seaborn • Pandas • NumPy • SciPy • Kepler.gl • AI Agents</p>
+            <p style="color: #9ca3af; font-size: 0.9rem;">Built with Streamlit • Plotly • Seaborn • Pandas • NumPy • SciPy • Kepler.gl • LangChain AI</p>
+            <p style="color: #10b981; font-size: 0.8rem; margin-top: 0.5rem;">🤖 Full AI capabilities available locally with OpenAI GPT-4 integration</p>
         </div>
         """, unsafe_allow_html=True)
         
@@ -3298,5 +3366,5 @@ def main():
         st.error("❌ Unable to load data. Please ensure the data file exists.")
 
 if __name__ == "__main__":
-    # Force deployment update - Sept 27, 2025 12:45 CET - Fix session state conflicts
+    # Force deployment update - Sept 27, 2025 13:30 CET - Enhanced AI fallback system with better UX
     main()
