@@ -35,10 +35,22 @@ class SimpleLangChainSystem:
         """Load CitiBike data into the system"""
         self.data_context["df"] = df
         
-        # Generate data summary
+        # Generate data summary - handle different date column names
+        date_column = None
+        for col in ['date', 'started_at', 'start_time', 'datetime']:
+            if col in df.columns:
+                date_column = col
+                break
+        
+        if date_column:
+            date_range = f"{df[date_column].min()} to {df[date_column].max()}"
+        else:
+            date_range = "No date column found"
+        
         self.data_summary = {
             "total_trips": len(df),
-            "date_range": f"{df['started_at'].min()} to {df['started_at'].max()}",
+            "date_range": date_range,
+            "date_column": date_column,
             "columns": list(df.columns),
             "data_types": df.dtypes.to_dict(),
             "missing_values": df.isnull().sum().to_dict(),
