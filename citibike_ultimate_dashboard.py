@@ -3021,5 +3021,5 @@ def main():
         st.error("❌ Unable to load data. Please ensure the data file exists.")
 
 if __name__ == "__main__":
-    # Force deployment update - Sept 18, 2025 17:05 CET
+    # Force deployment update - Sept 27, 2025 12:45 CET - Fix session state conflicts
     main()
