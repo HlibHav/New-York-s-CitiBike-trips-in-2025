@@ -2789,14 +2789,16 @@ def main():
             
             # Process message
             if send_button and user_input:
-                # Add user message
-                st.session_state.ai_messages.append({
-                    "role": "user",
-                    "content": user_input
-                })
-                
-                # Process AI response
-                with st.spinner("🤖 AI is analyzing your data..."):
+                # Check if we already processed this query recently
+                if "last_processed_query" not in st.session_state or st.session_state.last_processed_query != user_input:
+                    st.session_state.last_processed_query = user_input
+                    # Add user message
+                    st.session_state.ai_messages.append({
+                        "role": "user",
+                        "content": user_input
+                    })
+                    
+                    # Process AI response
                     response, insights, recommendations, chart = process_ai_query(user_input, filtered_df)
                     
                     # Add AI response
@@ -2811,10 +2813,10 @@ def main():
                         ai_message["chart"] = chart
                     
                     st.session_state.ai_messages.append(ai_message)
-                
-                # Clear input and rerun
-                st.session_state.ai_user_input = ""
-                st.rerun()
+                    
+                    # Clear input and rerun
+                    st.session_state.ai_user_input = ""
+                    st.rerun()
             
             # Quick action buttons
             st.markdown("---")
@@ -2825,13 +2827,15 @@ def main():
             with col1:
                 if st.button("📊 Hourly Heatmap", key="ai_heatmap_btn"):
                     query = "Create a heatmap of hourly usage patterns"
-                    # Add user message
-                    st.session_state.ai_messages.append({
-                        "role": "user",
-                        "content": query
-                    })
-                    # Process AI response
-                    with st.spinner("🤖 AI is analyzing your data..."):
+                    # Check if we already processed this query recently
+                    if "last_processed_query" not in st.session_state or st.session_state.last_processed_query != query:
+                        st.session_state.last_processed_query = query
+                        # Add user message
+                        st.session_state.ai_messages.append({
+                            "role": "user",
+                            "content": query
+                        })
+                        # Process AI response
                         response, insights, recommendations, chart = process_ai_query(query, filtered_df)
                         # Add AI response
                         ai_message = {
@@ -2843,18 +2847,20 @@ def main():
                         if chart is not None:
                             ai_message["chart"] = chart
                         st.session_state.ai_messages.append(ai_message)
-                    st.rerun()
+                        st.rerun()
             
             with col2:
                 if st.button("🏆 Top Stations", key="ai_stations_btn"):
                     query = "Show me the top 10 stations"
-                    # Add user message
-                    st.session_state.ai_messages.append({
-                        "role": "user", 
-                        "content": query
-                    })
-                    # Process AI response
-                    with st.spinner("🤖 AI is analyzing your data..."):
+                    # Check if we already processed this query recently
+                    if "last_processed_query" not in st.session_state or st.session_state.last_processed_query != query:
+                        st.session_state.last_processed_query = query
+                        # Add user message
+                        st.session_state.ai_messages.append({
+                            "role": "user", 
+                            "content": query
+                        })
+                        # Process AI response
                         response, insights, recommendations, chart = process_ai_query(query, filtered_df)
                         # Add AI response
                         ai_message = {
@@ -2866,18 +2872,20 @@ def main():
                         if chart is not None:
                             ai_message["chart"] = chart
                         st.session_state.ai_messages.append(ai_message)
-                    st.rerun()
+                        st.rerun()
             
             with col3:
                 if st.button("🌤️ Weather Impact", key="ai_weather_btn"):
                     query = "Analyze weather impact on ridership"
-                    # Add user message
-                    st.session_state.ai_messages.append({
-                        "role": "user",
-                        "content": query
-                    })
-                    # Process AI response
-                    with st.spinner("🤖 AI is analyzing your data..."):
+                    # Check if we already processed this query recently
+                    if "last_processed_query" not in st.session_state or st.session_state.last_processed_query != query:
+                        st.session_state.last_processed_query = query
+                        # Add user message
+                        st.session_state.ai_messages.append({
+                            "role": "user",
+                            "content": query
+                        })
+                        # Process AI response
                         response, insights, recommendations, chart = process_ai_query(query, filtered_df)
                         # Add AI response
                         ai_message = {
@@ -2889,18 +2897,20 @@ def main():
                         if chart is not None:
                             ai_message["chart"] = chart
                         st.session_state.ai_messages.append(ai_message)
-                    st.rerun()
+                        st.rerun()
             
             with col4:
                 if st.button("🍂 Seasonal Trends", key="ai_seasonal_btn"):
                     query = "What are the seasonal trends?"
-                    # Add user message
-                    st.session_state.ai_messages.append({
-                        "role": "user",
-                        "content": query
-                    })
-                    # Process AI response
-                    with st.spinner("🤖 AI is analyzing your data..."):
+                    # Check if we already processed this query recently
+                    if "last_processed_query" not in st.session_state or st.session_state.last_processed_query != query:
+                        st.session_state.last_processed_query = query
+                        # Add user message
+                        st.session_state.ai_messages.append({
+                            "role": "user",
+                            "content": query
+                        })
+                        # Process AI response
                         response, insights, recommendations, chart = process_ai_query(query, filtered_df)
                         # Add AI response
                         ai_message = {
@@ -2912,7 +2922,7 @@ def main():
                         if chart is not None:
                             ai_message["chart"] = chart
                         st.session_state.ai_messages.append(ai_message)
-                    st.rerun()
+                        st.rerun()
             
             # AI Features Overview
             st.markdown("---")
