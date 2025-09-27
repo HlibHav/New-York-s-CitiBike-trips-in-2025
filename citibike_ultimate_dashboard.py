@@ -1223,8 +1223,13 @@ def create_seasonal_analysis(df):
     }).round(2)
     
     monthly_stats.columns = ['avg_trips', 'total_trips', 'avg_temp', 'avg_precip']
-    monthly_stats.index = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    
+    # Create month name mapping
+    month_names = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun',
+                   7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'}
+    
+    # Map the numeric month index to month names
+    monthly_stats.index = monthly_stats.index.map(month_names)
     
     col1, col2 = st.columns(2)
     
