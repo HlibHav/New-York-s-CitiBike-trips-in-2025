@@ -2824,34 +2824,94 @@ def main():
             
             with col1:
                 if st.button("📊 Hourly Heatmap", key="ai_heatmap_btn"):
+                    query = "Create a heatmap of hourly usage patterns"
+                    # Add user message
                     st.session_state.ai_messages.append({
                         "role": "user",
-                        "content": "Create a heatmap of hourly usage patterns"
+                        "content": query
                     })
+                    # Process AI response
+                    with st.spinner("🤖 AI is analyzing your data..."):
+                        response, insights, recommendations, chart = process_ai_query(query, filtered_df)
+                        # Add AI response
+                        ai_message = {
+                            "role": "ai",
+                            "content": response,
+                            "insights": insights,
+                            "recommendations": recommendations
+                        }
+                        if chart is not None:
+                            ai_message["chart"] = chart
+                        st.session_state.ai_messages.append(ai_message)
                     st.rerun()
             
             with col2:
                 if st.button("🏆 Top Stations", key="ai_stations_btn"):
+                    query = "Show me the top 10 stations"
+                    # Add user message
                     st.session_state.ai_messages.append({
                         "role": "user", 
-                        "content": "Show me the top 10 stations"
+                        "content": query
                     })
+                    # Process AI response
+                    with st.spinner("🤖 AI is analyzing your data..."):
+                        response, insights, recommendations, chart = process_ai_query(query, filtered_df)
+                        # Add AI response
+                        ai_message = {
+                            "role": "ai",
+                            "content": response,
+                            "insights": insights,
+                            "recommendations": recommendations
+                        }
+                        if chart is not None:
+                            ai_message["chart"] = chart
+                        st.session_state.ai_messages.append(ai_message)
                     st.rerun()
             
             with col3:
                 if st.button("🌤️ Weather Impact", key="ai_weather_btn"):
+                    query = "Analyze weather impact on ridership"
+                    # Add user message
                     st.session_state.ai_messages.append({
                         "role": "user",
-                        "content": "Analyze weather impact on ridership"
+                        "content": query
                     })
+                    # Process AI response
+                    with st.spinner("🤖 AI is analyzing your data..."):
+                        response, insights, recommendations, chart = process_ai_query(query, filtered_df)
+                        # Add AI response
+                        ai_message = {
+                            "role": "ai",
+                            "content": response,
+                            "insights": insights,
+                            "recommendations": recommendations
+                        }
+                        if chart is not None:
+                            ai_message["chart"] = chart
+                        st.session_state.ai_messages.append(ai_message)
                     st.rerun()
             
             with col4:
                 if st.button("🍂 Seasonal Trends", key="ai_seasonal_btn"):
+                    query = "What are the seasonal trends?"
+                    # Add user message
                     st.session_state.ai_messages.append({
                         "role": "user",
-                        "content": "What are the seasonal trends?"
+                        "content": query
                     })
+                    # Process AI response
+                    with st.spinner("🤖 AI is analyzing your data..."):
+                        response, insights, recommendations, chart = process_ai_query(query, filtered_df)
+                        # Add AI response
+                        ai_message = {
+                            "role": "ai",
+                            "content": response,
+                            "insights": insights,
+                            "recommendations": recommendations
+                        }
+                        if chart is not None:
+                            ai_message["chart"] = chart
+                        st.session_state.ai_messages.append(ai_message)
                     st.rerun()
             
             # AI Features Overview
