@@ -45,10 +45,16 @@ from typing import Dict, Any, Optional
 def check_langchain_backend() -> bool:
     """Check if LangChain backend is available"""
     try:
+        # Try simple API server first
         response = requests.get("http://localhost:8000/health", timeout=2)
         return response.status_code == 200
     except:
-        return False
+        try:
+            # Try full API server as fallback
+            response = requests.get("http://localhost:8000/health", timeout=2)
+            return response.status_code == 200
+        except:
+            return False
 
 def query_langchain(query: str, df: pd.DataFrame) -> None:
     """Query the LangChain backend and display results"""
