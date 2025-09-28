@@ -4,6 +4,7 @@
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://citibike2024.streamlit.app/)
 
+
 🌟 **Live Dashboard**: [citibike2024.streamlit.app](https://citibike2024.streamlit.app/)
 
 ---
@@ -79,20 +80,39 @@ Develop an interactive dashboard that:
 ### **📊 Advanced Performance Indicators**
 Real-time KPIs showing total trips, daily averages, temperature impact, weather correlations, and peak season analysis with professional metric cards featuring liquid glass aesthetics.
 
+<img width="1512" height="982" alt="image" src="https://github.com/user-attachments/assets/a452a8c5-8812-4e3b-a076-ef7e833a42ca" />
+
 ### **🔍 Multi-Variable Correlation Analysis**
 Professional correlation matrix with dynamic color scaling showing relationships between weather variables and ridership. Features interactive heatmap with statistical significance indicators.
+
+<img width="1109" height="601" alt="image" src="https://github.com/user-attachments/assets/01ac58d0-193c-400e-8072-9335a34b49b5" />
+
 
 ### **🌤️ Weather Impact Deep Dive**
 Interactive scatter plots with OLS trendlines showing temperature-ridership relationships colored by precipitation levels. Includes box plots for weather category distribution analysis.
 
+<img width="1495" height="801" alt="image" src="https://github.com/user-attachments/assets/d2dff13a-0a88-4db4-9acd-2511051f0881" />
+
+
 ### **📈 Seasonal Usage Patterns**
 Time series analysis showing monthly ridership patterns with seasonal comparisons and trend analysis. Features violin plots for advanced distribution analysis.
+
+<img width="1493" height="796" alt="image" src="https://github.com/user-attachments/assets/2f60f63c-c604-4270-ac35-3771dd54346b" />
+
 
 ### **🗺️ Station Performance Mapping**
 Interactive Plotly maps with station performance indicators, including advanced Kepler.gl integration for trip flow visualization. Features most popular stations bar chart with professional styling.
 
+<img width="1100" height="791" alt="image" src="https://github.com/user-attachments/assets/67fd8fb8-1c5b-482a-aa0a-81f23c698e8e" />
+
+<img width="1127" height="630" alt="image" src="https://github.com/user-attachments/assets/6c9f397a-c003-4710-813b-9d68eb3464ff" />
+
+
+
 ### **🎻 Advanced Statistical Analysis**
 Professional Seaborn visualizations including violin plots, box plots, and distribution analysis with publication-ready styling and comprehensive statistical insights.
+
+
 
 ---
 
