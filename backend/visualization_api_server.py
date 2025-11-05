@@ -63,7 +63,7 @@ def load_citibike_data():
     """Load CitiBike data for visualization generation"""
     try:
         # Try to load the processed data
-        df = pd.read_csv("citibike_weather_detrended_analysis.csv", parse_dates=['date'])
+        df = pd.read_csv("data/citibike_weather_detrended_analysis.csv", parse_dates=['date'])
         
         # Add some basic processing
         df["temperature_f"] = df["temperature_mean_c"] * 9/5 + 32

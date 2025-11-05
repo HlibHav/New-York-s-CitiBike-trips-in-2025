@@ -1,38 +1,42 @@
-# Large files (>25MB)
-*.csv
-*.parquet
-*.h5
-*.hdf5
-*.pkl
-*.pickle
-*.db
-*.sqlite
-*.zip
-*.tar.gz
-*.7z
-
-# Jupyter Notebook checkpoints
-.ipynb_checkpoints/
-
-# Python cache
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-
-# Virtual environments
-venv/
+.Python
 env/
-.env
-.venv
-*_env/
+venv/
+ENV/
+citibike_weather_env/
 
-# OS generated files
+# Streamlit
+.streamlit/secrets.toml
+
+# Data files (if large)
+*.csv
+!data/*.csv
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
 .DS_Store
 Thumbs.db
 
-# Exception for essential data files
-!citibike_weather_merged_2024.csv
-!citibike_weather_detrended_analysis.csv
-!reduced_data_to_plot_7.csv
-!top20.csv
+# Logs
+*.log
+api_server.log
+
+# Generated files
+generated_visualizations/
+*.html
+!citibike_trips_map.html
+
+# Archives
+*.zip
